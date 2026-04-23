@@ -1,446 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUANTUM PREDICTOR V2 - REV 23</title>
-    <style>
-        :root { 
-            --glass: rgba(138, 43, 226, 0.15);
-            --border: rgba(147, 0, 255, 0.4);
-            --neon-purple: #8a2be2;
-            --neon-cyan: #00ffff;
-            --plasma-gold: #ffd700;
-            --dark-void: #0a0015;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUANTUM PREDICTOR V2 - FIXED</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body, html {
-            height: 100%; font-family: 'Orbitron', 'Courier New', monospace;
-            background: linear-gradient(135deg, var(--dark-void), #000415);
-            color: #fff; overflow-x: hidden; user-select: none;
-            animation: voidPulse 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes voidPulse {
-            0% { background: linear-gradient(135deg, var(--dark-void), #000415); }
-            100% { background: linear-gradient(135deg, #1a0030, #000a20); }
-        }
-
-        /* Quantum Boot Sequence */
-        #bootSequence {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark-void); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 10000;
-            transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .quantum-text {
-            font-size: clamp(28px, 10vw, 48px); font-weight: 900; 
-            letter-spacing: 6px; text-transform: uppercase; 
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; border-right: 5px solid var(--neon-cyan);
-            padding-right: 15px; animation: quantumType 3s steps(25), glitch 0.3s infinite;
-            overflow: hidden; text-shadow: 0 0 30px var(--neon-purple);
-            margin-bottom: 30px;
-        }
-
-        @keyframes quantumType { from { width: 0 } to { width: 100% } }
-        @keyframes glitch { 
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-        }
-
-        .status-scan {
-            font-size: 12px; color: var(--neon-cyan); letter-spacing: 3px;
-            animation: scan 1.5s linear infinite;
-        }
-
-        @keyframes scan { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(100px); } }
-
-        .app-container { max-width: 500px; margin: 20px auto; padding: 20px; }
-
-        .plasma-card {
-            background: var(--glass); backdrop-filter: blur(20px);
-            border: 2px solid var(--border); border-radius: 25px;
-            padding: 25px; margin-bottom: 25px; 
-            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative; overflow: hidden;
-        }
-
-        .plasma-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(147, 0, 255, 0.1), transparent);
-            animation: rotate 20s linear infinite; z-index: 0;
-        }
-
-        .plasma-card > * { position: relative; z-index: 1; }
-
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
-
-        .core-header { 
-            text-align: center; 
-            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-size: 28px; font-weight: 900; margin-bottom: 25px;
-            text-shadow: 0 0 25px var(--neon-purple);
-        }
-
-        .prediction-core { text-align: center; }
-        .pred-value { 
-            font-size: clamp(80px, 20vw, 110px); font-weight: 900; 
-            background: linear-gradient(45deg, var(--plasma-gold), #fff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 40px var(--plasma-gold); margin: 20px 0;
-            animation: pulseGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulseGlow { 
-            0% { filter: drop-shadow(0 0 20px var(--plasma-gold)); }
-            100% { filter: drop-shadow(0 0 40px var(--plasma-gold)); }
-        }
-
-        .quantum-timer { 
-            font-size: 28px; color: var(--plasma-gold); font-weight: 900;
-            text-shadow: 0 0 20px var(--plasma-gold);
-        }
-
-        .system-status {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 12px; color: var(--neon-cyan); margin-bottom: 15px;
-            text-shadow: 0 0 10px var(--neon-cyan);
-        }
-
-        .predict-mode {
-            font-size: 11px; background: rgba(147, 0, 255, 0.25); 
-            padding: 6px 12px; border-radius: 8px; color: var(--neon-cyan);
-            border: 1px solid var(--neon-purple); display: inline-block;
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
-        }
-
-        .martingale-badge {
-            background: rgba(255, 215, 0, 0.2); border: 2px solid var(--plasma-gold);
-            padding: 12px 20px; border-radius: 15px; font-weight: 900; 
-            margin: 20px 0; font-size: 14px; text-align: center;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .target-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px;
-        }
-
-        .target-orb {
-            width: 55px; height: 55px; line-height: 55px; border: 3px solid var(--plasma-gold);
-            border-radius: 50%; font-weight: 900; background: rgba(0,0,0,0.6);
-            color: var(--plasma-gold); text-align: center; font-size: 18px;
-            transition: all 0.3s ease; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .target-orb:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
-
-        input[type="text"] { 
-            width: 85%; padding: 18px; background: rgba(0,0,0,0.7); 
-            border: 2px solid var(--border); border-radius: 15px; color: #fff;
-            text-align: center; outline: none; margin-bottom: 20px; font-size: 16px;
-            font-family: inherit; transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-            background: rgba(0,0,0,0.9);
-        }
-
-        .quantum-btn {
-            width: 95%; padding: 20px; background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan));
-            border: none; border-radius: 15px; color: white; font-weight: 900; 
-            cursor: pointer; font-size: 16px; text-transform: uppercase;
-            box-shadow: 0 0 25px rgba(138, 43, 226, 0.6);
-            transition: all 0.3s ease; position: relative; overflow: hidden;
-        }
-
-        .quantum-btn:hover {
-            transform: translateY(-3px); box-shadow: 0 10px 35px rgba(138, 43, 226, 0.8);
-        }
-
-        .quantum-btn:active { transform: translateY(-1px); }
-
-        .history-container { max-height: 300px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { 
-            color: var(--neon-cyan); padding: 12px 8px; 
-            border-bottom: 2px solid rgba(147, 0, 255, 0.3); text-align: center;
-            font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
-        }
-        td { 
-            padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); 
-            text-align: center; font-family: monospace;
-        }
-
-        .victory { color: #00ff88; font-weight: bold; text-shadow: 0 0 10px #00ff88; }
-        .defeat { color: #ff4757; font-weight: bold; text-shadow: 0 0 10px #ff4757; }
-        .neutral { color: var(--neon-cyan); }
-
-        .hidden { display: none !important; }
-
-        /* Scrollbar Styling */
-        .history-container::-webkit-scrollbar { width: 8px; }
-        .history-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        .history-container::-webkit-scrollbar-thumb { 
-            background: linear-gradient(var(--neon-purple), var(--neon-cyan)); 
-            border-radius: 4px;
-        }
-
-        @media (max-width: 480px) {
-            .app-container { margin: 10px; padding: 15px; }
-            .target-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+body{
+    background:#0a0015;
+    color:#fff;
+    font-family:Arial;
+    text-align:center;
+}
+.box{
+    margin:20px auto;
+    padding:20px;
+    width:320px;
+    background:#1e293b;
+    border-radius:10px;
+}
+.big{color:#22c55e;}
+.small{color:#3b82f6;}
+.red{color:#ef4444;}
+.green{color:#22c55e;}
+</style>
 </head>
+
 <body>
 
-    <div id="bootSequence">
-        <div class="quantum-text">QUANTUM PREDICTOR <span style="color: var(--neon-cyan); font-size: 0.8em;">V2</span></div>
-        <div class="status-scan">NEURAL MATRIX INITIALIZING... 93% COMPLETE</div>
-        <div class="status-scan" style="animation-delay: 0.5s;">QUANTUM ENTANGLEMENT STABLE</div>
-        <div class="status-scan" style="animation-delay: 1s;">PREDICTION ALGORITHMS ONLINE</div>
-    </div>
+<h2>🔥 QUANTUM PREDICTOR 🔥</h2>
 
-    <div id="mainInterface" class="hidden">
-        <div class="app-container">
-            <div class="core-header">
-                QUANTUM <span style="color: var(--neon-cyan);">PREDICTOR</span> V2
-            </div>
+<div class="box">
+    <div id="periodDisplay">PERIOD: --</div>
+    <div id="last">Last: --</div>
+</div>
 
-            <div id="authPortal" class="plasma-card">
-                <input type="text" id="authCode" placeholder="QUANTUM AUTH KEY" maxlength="12">
-                <button class="quantum-btn" onclick="initiateQuantumCore()">ACTIVATE CORE</button>
-            </div>
+<div class="box">
+    <h3>PREDICTION</h3>
+    <div id="mainPrediction">--</div>
+    <div id="color">--</div>
+    <div id="numbers">--</div>
+</div>
 
-            <div id="predictionCore" class="hidden">
-                <div class="system-status">
-                    <span>● QUANTUM LINK: SECURE</span>
-                    <span id="latencyDisplay">LATENCY: 12MS</span>
-                </div>
-
-                <div class="plasma-card prediction-core">
-                    <div id="algoStatus" class="predict-mode">ALGORITHM: CALCULATING...</div>
-                    <div id="countdown" class="quantum-timer">00:60</div>
-                    <div id="periodDisplay" style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 10px 0;">PERIOD: ---</div>
-                    <div id="mainPrediction" class="pred-value">STANDBY</div>
-                    <div id="martingaleStatus" class="martingale-badge">QUANTUM LEVEL: 1</div>
-                    
-                    <div style="font-size: 12px; color: var(--plasma-gold); margin: 15px 0 10px 0;">
-                        TARGET ORBITALS:
-                    </div>
-                    <div class="target-grid" id="targetOrbitals">
-                        <div class="target-orb">?</div>
-                        <div class="target-orb">?</div>
-                        <div class="target-orb">?</div>
-                    </div>
-                </div>
-
-                <div class="plasma-card">
-                    <div style="font-size: 13px; color: var(--neon-cyan); margin-bottom: 15px; font-weight: 900;">
-                        QUANTUM LOG MATRIX
-                    </div>
-                    <div class="history-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>PERIOD</th>
-                                    <th>PREDICTION</th>
-                                    <th>RESULT</th>
-                                    <th>STATUS</th>
-                                    <th>LEVEL</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quantumLog"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="box">
+    <h3>HISTORY</h3>
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>Pred</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody id="log"></tbody>
+    </table>
+</div>
 
 <script>
-const QUANTUM_KEY = "QUANTUMV2";
-const DATA_STREAM = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json";
 
-let prevPeriod = null, nextPrediction = null, orbitalTargets = [];
-let quantumLevel = 1, victories = 0, defeats = 0, sessionStart = Date.now();
+/* ✅ FIXED API */
+const DATA_STREAM = "https://api.allorigins.win/raw?url=https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json";
 
-function quantumLatency() {
-    const latency = Math.floor(Math.random() * 35) + 8;
-    document.getElementById("latencyDisplay").textContent = `LATENCY: ${latency}MS`;
-}
-setInterval(quantumLatency, 2500);
+let prevPeriod=null;
+let nextPrediction=null;
 
-function updateQuantumStats(won) {
-    if (won) victories++; else defeats++;
-    const total = victories + defeats;
-    const winRate = ((victories / total) * 100).toFixed(1);
-    
-    const sessionTime = Math.floor((Date.now() - sessionStart) / 1000 / 60);
-    document.getElementById("algoStatus").textContent = 
-        `ALGORITHM: ACTIVE | WINRATE ${winRate}% | SESSION ${sessionTime}M`;
+/* SIZE */
+function getSize(n){
+    return n>=5?"BIG":"SMALL";
 }
 
-function advancedPrediction(last5Results, lastNumbers) {
-    // Quantum Pattern Recognition v2.0
-    
-    // PATTERN 1: Triple Quantum Lock
-    if (last5Results[0] === last5Results[1] && last5Results[1] === last5Results[2]) {
-        return { algorithm: "TRIPLE LOCK", prediction: last5Results[0] };
-    }
-    
-    // PATTERN 2: Momentum Reversal
-    const recentBig = last5Results.slice(0, 3).filter(x => x === "BIG").length;
-    if (recentBig >= 2) {
-        return { algorithm: "MOMENTUM FLIP", prediction: "SMALL" };
-    } else if (recentBig <= 1) {
-        return { algorithm: "MOMENTUM FLIP", prediction: "BIG" };
-    }
-    
-    // PATTERN 3: Sum Entropy Analysis
-    const entropySum = lastNumbers.reduce((a, b) => a + b, 0);
-    const avgEntropy = entropySum / 5;
-    
-    if (avgEntropy > 22) {
-        return { algorithm: "ENTROPY SHIFT", prediction: "SMALL" };
-    } else {
-        return { algorithm: "ENTROPY SHIFT", prediction: "BIG" };
-    }
+/* SIMPLE PREDICT */
+function predict(sizes){
+    let big=sizes.filter(x=>x==="BIG").length;
+    let small=sizes.length-big;
+    return big>small?"BIG":"SMALL";
 }
 
-function orbitalTargeting(sumTotal, prediction) {
-    if (prediction === "BIG") {
-        return sumTotal > 22 ? [0, 2, 4] : [5, 7, 9];
-    } else {
-        return sumTotal < 23 ? [0, 1, 2] : [6, 8];
-    }
+/* COLOR */
+function getColor(nums){
+    let map={0:"RED",1:"GREEN",2:"RED",3:"GREEN",4:"RED",
+             5:"GREEN",6:"RED",7:"GREEN",8:"RED",9:"GREEN"};
+    let arr=nums.slice(0,10).map(n=>map[n]);
+    let count={};
+    arr.forEach(c=>count[c]=(count[c]||0)+1);
+    return Object.keys(count).reduce((a,b)=>count[a]>count[b]?a:b);
 }
 
-async function quantumSync() {
-    try {
-        const response = await fetch(`${DATA_STREAM}?cache=${Date.now()}`);
-        const data = await response.json();
-        const current = data.data.list[0];
-        
-        processQuantumData(current.issueNumber, parseInt(current.number), data.data.list);
-    } catch (error) {
-        console.log("Quantum sync interrupted");
-    }
+/* NUMBERS */
+function suggest(size,last){
+    let pool=size==="BIG"?[6,7,8,9]:[1,2,3,4];
+    pool=pool.filter(x=>x!==last);
+    return pool.sort(()=>0.5-Math.random()).slice(0,2);
 }
 
-function processQuantumData(period, number, history) {
-    const actualResult = number >= 5 ? "BIG" : "SMALL";
-    
-    if (prevPeriod !== period) {
-        if (nextPrediction && prevPeriod) {
-            const isVictory = (nextPrediction === actualResult) || orbitalTargets.includes(number);
-            
-            updateQuantumStats(isVictory);
-            
-            if (isVictory) {
-                quantumLevel = 1;
-            } else {
-                quantumLevel = Math.min(quantumLevel + 1, 7);
-            }
-            
-            const logEntry = `
-                <tr>
-                    <td>${prevPeriod.slice(-4)}</td>
-                    <td>${nextPrediction}</td>
-                    <td>${actualResult}(${number})</td>
-                    <td class="${isVictory ? 'victory' : 'defeat'}">${isVictory ? 'VICTORY' : 'DEFEAT'}</td>
-                    <td class="neutral">L${quantumLevel}</td>
-                </tr>`;
-            
-            const logTable = document.getElementById("quantumLog");
-            logTable.insertAdjacentHTML('afterbegin', logEntry);
-            
-            // Keep only last 15 entries
-            while (logTable.children.length > 15) {
-                logTable.removeChild(logTable.lastChild);
-            }
+/* 🔥 FIXED FETCH */
+async function fetchData(){
+    try{
+        let res=await fetch(DATA_STREAM);
+        let data=await res.json();
+
+        let list=data?.data?.list || data?.data || data?.list;
+        if(!list || list.length===0) return;
+
+        let nums=list.map(x=>parseInt(x.number ?? x.openCode ?? x.result));
+        let sizes=nums.map(getSize);
+
+        let period=list[0].issueNumber || list[0].period;
+        let lastNum=nums[0];
+
+        if(!period || isNaN(lastNum)) return;
+
+        if(period!==prevPeriod){
+
+            let pred=predict(sizes);
+            let color=getColor(nums);
+            let numbers=suggest(pred,lastNum);
+
+            document.getElementById("periodDisplay").innerText="PERIOD: "+period;
+            document.getElementById("last").innerText="Last: "+lastNum;
+
+            document.getElementById("mainPrediction").innerHTML=
+            `<span class="${pred.toLowerCase()}">${pred}</span>`;
+
+            document.getElementById("color").innerHTML=
+            `<span class="${color.toLowerCase()}">${color}</span>`;
+
+            document.getElementById("numbers").innerText=numbers.join(", ");
+
+            /* LOG */
+            let row=`
+            <tr>
+                <td>${period}</td>
+                <td>${pred}</td>
+                <td>${getSize(lastNum)}(${lastNum})</td>
+            </tr>`;
+            document.getElementById("log").insertAdjacentHTML("afterbegin",row);
+
+            prevPeriod=period;
         }
-        
-        prevPeriod = period;
-        
-        // Analyze last 5 periods
-        const recent5 = history.slice(0, 5).map(x => parseInt(x.number) >= 5 ? "BIG" : "SMALL");
-        const recentNumbers = history.slice(0, 5).map(x => parseInt(x.number));
-        
-        const prediction = advancedPrediction(recent5, recentNumbers);
-        nextPrediction = prediction.prediction;
-        
-        const totalSum = recentNumbers.reduce((a, b) => a + b, 0);
-        orbitalTargets = orbitalTargeting(totalSum, nextPrediction);
-        
-        // Update UI
-        document.getElementById("algoStatus").textContent = `ALGORITHM: ${prediction.algorithm}`;
-        document.getElementById("periodDisplay").textContent = `PERIOD: ${(BigInt(period) + 1n).toString()}`;
-        document.getElementById("mainPrediction").textContent = nextPrediction;
-        document.getElementById("martingaleStatus").textContent = `QUANTUM LEVEL: ${quantumLevel}`;
-        
-        // Update orbital targets
-        const targetContainer = document.getElementById("targetOrbitals");
-        targetContainer.innerHTML = orbitalTargets.map(num => 
-            `<div class="target-orb">${num}</div>`
-        ).join('');
+
+    }catch(e){
+        document.getElementById("periodDisplay").innerText="DATA ERROR";
     }
 }
 
-// Authentication
-function initiateQuantumCore() {
-    const input = document.getElementById("authCode").value.trim().toUpperCase();
-    
-    if (input === QUANTUM_KEY) {
-        document.getElementById("authPortal").classList.add("hidden");
-        document.getElementById("predictionCore").classList.remove("hidden");
-        document.getElementById("mainInterface").classList.remove("hidden");
-        document.getElementById("bootSequence").classList.add("hidden");
-        
-        // Start quantum sync
-        syncInterval = setInterval(quantumSync, 2000);
-        quantumSync(); // Initial sync
-        
-        // Countdown timer
-        let timeLeft = 60;
-        setInterval(() => {
-            timeLeft = (timeLeft - 1 + 60) % 60;
-            const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-            const seconds = String(timeLeft % 60).padStart(2, '0');
-            document.getElementById("countdown").textContent = `${minutes}:${seconds}`;
-        }, 1000);
-    } else {
-        document.getElementById("authCode").style.borderColor = "#ff4757";
-        setTimeout(() => {
-            document.getElementById("authCode").style.borderColor = "var(--border)";
-        }, 1000);
-    }
-}
+/* LOOP */
+setInterval(fetchData,3000);
+fetchData();
 
-// Auto-hide boot sequence after 5 seconds
-setTimeout(() => {
-    if (document.getElementById("bootSequence").style.display !== "none") {
-        document.getElementById("bootSequence").classList.add("hidden");
-    }
-}, 5000);
-
-// Enter key support
-document.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !document.getElementById("predictionCore").classList.contains("hidden")) {
-        initiateQuantumCore();
-    }
-});
 </script>
+
 </body>
 </html>
